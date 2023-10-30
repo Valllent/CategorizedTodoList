@@ -6,5 +6,6 @@ initEnvVariables()
     .then(initDatabase)
     .then(initServer)
     .catch((error) => {
-        console.log("Can't start server: " + error)
+        console.log("Can't start server!")
+        console.trace(error)
     })

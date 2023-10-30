@@ -1,32 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./normalize.css" />
-    <link rel="stylesheet" href="./styles.css" />
-    <title>Traditional</title>
-  </head>
-  <body>
-    <nav>
-      <div class="nav-center">
-        <h5>HTTP Methods</h5>
-        <div>
-          <a href="index.html">regular </a>
-          <a href="javascript.html">javascript </a>
-        </div>
-      </div>
-    </nav>
-    <main>
-      <form action="/api/todo" method="POST">
-        <h3>Traditional Form</h3>
-        <div class="form-row">
-          <label for="name"> enter name </label>
-          <input type="text" name="name" id="name" autocomplete="false" />
-        </div>
-        <button type="submit" class="block">submit</button>
-      </form>
-    </main>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home page</title>
+    <link href="styles.css" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>Home Page</h1>
+
+<div class="auth-app-form">
+    <h2>Enter your details to login</h2>
+
+    <form>
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Email">
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Password">
+
+        <div class="error-message"></div>
+
+        <button type="submit" class="form-button">Login</button>
+
+        <p class="form-toggle">
+            Don't have an auth app account? <a href="register.html">Register</a>
+        </p>
+
+    </form>
+</div>
+
+
+</body>
 </html>

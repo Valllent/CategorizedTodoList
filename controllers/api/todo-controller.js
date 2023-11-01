@@ -1,37 +1,52 @@
 const {todoRepository} = require("../../db/repositories/todo-repository")
+const {todoCategoryRepository} = require("../../db/repositories/todo-category-repository");
 
 module.exports = {
-    getTodoList: (req, res) => {
-        todoRepository
-            .selectAll()
-            .then((todoList) => {
-                res.status(200).json({
-                    success: true,
-                    data: todoList
-                });
-            })
+    getTodoList: async (req, res) => {
+        const {search, categoryId} = req.query;
+
+        const todoList = await todoRepository.selectBy(search, categoryId)
+        res.status(200).json({
+            success: true,
+            data: todoList
+        });
     },
 
-    postTodoItem (req, res) {
-        const {name, completed} = req.body;
+    postTodoItem: async (req, res) => {
+        const {name, completed, category} = req.body;
         if (!name) {
-            res.status(400).send("Please provide 'name' parameter!")
-            return
+            return res.status(400).send("Please provide 'name' parameter!")
         }
 
-        let newCompletedValue = false;
+        let completedValue = false;
         if (completed === "true" || completed === true) {
-            newCompletedValue = true;
+            completedValue = true;
         }
 
-        todoRepository
-            .insert(name, newCompletedValue)
-            .then(() => {
-                res.status(201).send("Successfully added: " + name)
-            })
+        let categoryId
+        if (category) {
+            if (!Number.isInteger(category)) {
+                return res.status(400).send("Category is not a number!")
+            }
+
+            categoryId = Number.parseInt(category);
+            const todoCategory = await todoCategoryRepository.selectById(categoryId)
+            if (!todoCategory) {
+                return res.status(400).send(`Can't find category with id ${categoryId}`)
+            }
+        } else {
+            const defaultCategory = await todoCategoryRepository.selectByName("Default");
+            console.log(JSON.stringify(defaultCategory))
+            if (defaultCategory) {
+                categoryId = defaultCategory.id
+            }
+        }
+
+        await todoRepository.insert(name, completedValue, categoryId)
+        res.status(201).send("Successfully added: " + name)
     },
 
-    checkTodoItemIdMiddleware: (req, res, next) => {
+    checkTodoItemIdMiddleware: async (req, res, next) => {
         const {id} = req.params
 
         const todoItemId = parseInt(id);
@@ -40,22 +55,19 @@ module.exports = {
             return;
         }
 
-        todoRepository
-            .select(todoItemId)
-            .then((todoItem) => {
-                if (!todoItem) {
-                    res.status(400).send(`Can't find item with id: ${todoItemId}`)
-                    return;
-                }
-                req.todoItem = todoItem
-                next()
-            })
+        const todoItem = await todoRepository.select(todoItemId)
+        if (!todoItem) {
+            res.status(400).send(`Can't find item with id: ${todoItemId}`)
+            return;
+        }
+        req.todoItem = todoItem
+        next()
     },
 
-    putTodoItem: (req, res) => {
+    putTodoItem: async (req, res) => {
         const {todoItem} = req
 
-        const {name, completed} = req.body
+        const {name, completed, category} = req.body
         if (name) {
             todoItem.name = name
         }
@@ -66,20 +78,21 @@ module.exports = {
             todoItem.completed = false
         }
 
-        todoItem
-            .save()
-            .then(() => {
-                res.status(201).send("Todo item changed!")
-            })
+        if (category && Number.isInteger(category)) {
+            const categoryItem = todoCategoryRepository.selectById(category)
+            if (categoryItem) {
+                todoItem.categoryId = categoryItem.id
+            }
+        }
+
+        await todoItem.save()
+        res.status(201).send("Todo item changed!")
     },
 
-    deleteTodoItem: (req, res) => {
+    deleteTodoItem: async (req, res) => {
         const {todoItem} = req
 
-        todoItem
-            .destroy()
-            .then(() => {
-                res.status(201).send("Todo item removed!")
-            })
+        await todoItem.destroy()
+        res.status(201).send("Todo item removed!")
     }
 }

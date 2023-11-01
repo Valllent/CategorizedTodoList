@@ -1,8 +1,9 @@
-const {DataTypes, Model} = require("sequelize")
+const {DataTypes, Model, Op} = require("sequelize")
 
 let todoEntity
 
-class Todo extends Model{}
+class Todo extends Model {
+}
 
 module.exports = {
     initTodoEntity(sequelize) {
@@ -19,18 +20,41 @@ module.exports = {
             completed: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false
+            },
+            categoryId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
             }
         }
         Todo.init(todoObject, {
             sequelize,
             modelName: "todoItems"
         })
+        const TodoCategory = sequelize.models.todoCategories;
+        if (!TodoCategory) {
+            throw Error("TodoCategory table must be initialized earlier Todo table")
+        }
+        Todo.belongsTo(TodoCategory, {foreignKey: "categoryId"})
         todoEntity = Todo
     },
 
     todoRepository: {
-        async selectAll() {
-            return await todoEntity.findAll()
+        async selectBy(search, categoryId) {
+            const whereClause = {}
+
+            if (search) {
+                whereClause.name = {
+                    [Op.iLike]: "%" + search + "%"
+                }
+            }
+
+            if (categoryId) {
+                whereClause.categoryId = Number.parseInt(categoryId)
+            }
+
+            return await todoEntity.findAll({
+                where: whereClause
+            })
         },
 
         async select(id) {
@@ -41,10 +65,11 @@ module.exports = {
             })
         },
 
-        async insert(name, completed) {
+        async insert(name, completed, categoryId) {
             return await todoEntity.create({
                 name: name,
-                completed: completed
+                completed: completed,
+                categoryId: categoryId
             })
         }
     }

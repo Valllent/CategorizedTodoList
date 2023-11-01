@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const {unknownUrl} = require("../controllers/unknown-contoller");
+const GlobalController = require("../controllers/global-contoller");
 const {initAuthentication} = require("./authentication");
 
 module.exports.initServer = async () => {
@@ -12,17 +12,13 @@ module.exports.initServer = async () => {
     initAuthentication(app)
 
     const apiRouter = express.Router()
-    apiRouter.use("/todo", require("./api/todo"))
-    apiRouter.use("/users", require("./api/users"))
-    apiRouter.use("/categories", require("./api/categories"))
+    apiRouter.use("/todo", require("./api/todo-route"))
+    apiRouter.use("/users", require("./api/users-route"))
+    apiRouter.use("/categories", require("./api/categories-route"))
     app.use("/api", apiRouter)
 
-    app.all('*', unknownUrl)
-    app.use((err, req, res, next) => {
-        console.log(`Exception in request: ${req.url}`)
-        console.trace(err)
-        res.status(500).send("Internal error")
-    })
+    app.all('*', GlobalController.unknownUrl)
+    app.use(GlobalController.exceptionHandler)
 
     app.listen(5000, () => {
         console.log('Server started: http://localhost:5000')

@@ -1,7 +1,8 @@
 const {Sequelize} = require('sequelize');
-const {initTodoEntity} = require("./repositories/todo-repository");
-const {initUserEntity} = require("./repositories/users-repository");
-const {initTodoCategoryEntity, todoCategoryRepository} = require("./repositories/todo-category-repository");
+const TodoCategoryModel = require("./models/todo-category-model");
+const TodoModel = require("./models/todo-model");
+const UserModel = require("./models/user-model");
+const {TodoCategoryRepository} = require("./repositories/todo-category-repository");
 
 module.exports.initDatabase = async () => {
     const sequelize = new Sequelize({
@@ -16,20 +17,20 @@ module.exports.initDatabase = async () => {
     try {
         await sequelize.authenticate()
     } catch (error) {
-        throw "DB connection failed: " + error
+        throw Error("DB connection failed: " + error)
     }
     console.log('DB is connected successfully.')
 
-    initUserEntity(sequelize)
-    initTodoCategoryEntity(sequelize)
-    initTodoEntity(sequelize)
+    UserModel.init(sequelize)
+    TodoCategoryModel.init(sequelize)
+    TodoModel.init(sequelize)
 
     try {
         await sequelize.sync()
 
-        await todoCategoryRepository.insertDefault()
+        await TodoCategoryRepository.insertDefault()
     } catch (error) {
-        throw "Tables creation failed: " + error
+        throw Error("Tables creation failed: " + error)
     }
     console.log("Tables were created successfully.")
 }

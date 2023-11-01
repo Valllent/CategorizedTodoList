@@ -1,44 +1,9 @@
-const {DataTypes, Model, Op} = require("sequelize")
+const {Op} = require("sequelize")
+const {getTodoModel} = require("../models/todo-model");
 
-let todoEntity
-
-class Todo extends Model {
-}
 
 module.exports = {
-    initTodoEntity(sequelize) {
-        const todoObject = {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            completed: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: false
-            },
-            categoryId: {
-                type: DataTypes.INTEGER,
-                allowNull: true
-            }
-        }
-        Todo.init(todoObject, {
-            sequelize,
-            modelName: "todoItems"
-        })
-        const TodoCategory = sequelize.models.todoCategories;
-        if (!TodoCategory) {
-            throw Error("TodoCategory table must be initialized earlier Todo table")
-        }
-        Todo.belongsTo(TodoCategory, {foreignKey: "categoryId"})
-        todoEntity = Todo
-    },
-
-    todoRepository: {
+    TodoRepository: {
         async selectBy(search, categoryId) {
             const whereClause = {}
 
@@ -52,13 +17,13 @@ module.exports = {
                 whereClause.categoryId = Number.parseInt(categoryId)
             }
 
-            return await todoEntity.findAll({
+            return await getTodoModel().findAll({
                 where: whereClause
             })
         },
 
         async select(id) {
-            return await todoEntity.findOne({
+            return await getTodoModel().findOne({
                 where: {
                     id: id
                 }
@@ -66,7 +31,7 @@ module.exports = {
         },
 
         async insert(name, completed, categoryId) {
-            return await todoEntity.create({
+            return await getTodoModel().create({
                 name: name,
                 completed: completed,
                 categoryId: categoryId

@@ -1,10 +1,10 @@
-const {todoCategoryRepository} = require("../../db/repositories/todo-category-repository");
+const {TodoCategoryRepository} = require("../../db/repositories/todo-category-repository");
 const validate = require("validate.js");
 const constraints = require("../../utils/validation-constraints");
 
 module.exports = {
     getCategories: async (req, res) => {
-        const todoList = await todoCategoryRepository.selectAll()
+        const todoList = await TodoCategoryRepository.selectAll()
         res.status(200).json({
             success: true,
             data: todoList
@@ -22,11 +22,11 @@ module.exports = {
             return res.status(400).send("'name' parsing error: " + error)
         }
 
-        if (await todoCategoryRepository.selectByName(name)) {
+        if (await TodoCategoryRepository.selectByName(name)) {
             return res.status(400).send("Already exists item with this ids")
         }
 
-        await todoCategoryRepository.insert(name)
+        await TodoCategoryRepository.insert(name)
         res.status(201).send("Successfully added category: " + name)
     },
 
@@ -38,7 +38,7 @@ module.exports = {
             return res.status(400).send(`Can't parse item id: ${id}!`)
 
         }
-        const category = await todoCategoryRepository.selectById(categoryId)
+        const category = await TodoCategoryRepository.selectById(categoryId)
         if (!category) {
             return res.status(400).send(`Can't find item with id: ${categoryId}`)
         }

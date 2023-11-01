@@ -2,6 +2,7 @@ const express = require("express");
 const usersController = require("../../controllers/api/users-controller");
 const tryCatch = require("../../utils/try-catch");
 
+
 const router = express.Router()
 
 router.post("/register", tryCatch(usersController.registerUser))

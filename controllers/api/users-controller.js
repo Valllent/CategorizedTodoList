@@ -1,6 +1,6 @@
 const validate = require("validate.js")
 const constraints = require("../../utils/validation-constraints")
-const {userRepository} = require("../../db/repositories/users-repository");
+const {UserRepository} = require("../../db/repositories/users-repository");
 const {authenticate} = require("../../routes/authentication");
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
             return
         }
 
-        await userRepository.insert(name, email, password)
+        await UserRepository.insert(name, email, password)
         res.status(200).send("User created!")
     },
 
@@ -87,12 +87,12 @@ async function checkParameters(name, email, password) {
         return "'password' parsing error: " + error
     }
 
-    const userWithTheSameName = await userRepository.selectByName(name);
+    const userWithTheSameName = await UserRepository.selectByName(name);
     if (userWithTheSameName) {
         return "User with this name already exists"
     }
 
-    const userWithTheSameEmail = await userRepository.selectByEmail(email);
+    const userWithTheSameEmail = await UserRepository.selectByEmail(email);
     if (userWithTheSameEmail) {
         return "User with this email already exists"
     }

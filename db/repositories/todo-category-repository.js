@@ -1,37 +1,13 @@
-const {DataTypes, Model} = require("sequelize")
-
-let todoCategoryEntity
-
-class TodoCategory extends Model{}
+const {getTodoCategoryModel} = require("../models/todo-category-model");
 
 module.exports = {
-    initTodoCategoryEntity: (sequelize) => {
-        const todoCategoryObject = {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-        }
-        TodoCategory.init(todoCategoryObject, {
-            sequelize,
-            modelName: "todoCategories"
-        })
-        todoCategoryEntity = TodoCategory
-    },
-
-    todoCategoryRepository: {
-
+    TodoCategoryRepository: {
         async selectAll() {
-            return await todoCategoryEntity.findAll()
+            return await getTodoCategoryModel().findAll()
         },
 
         async selectByName(name) {
-            return await todoCategoryEntity.findOne({
+            return await getTodoCategoryModel().findOne({
                 where: {
                     name: name
                 }
@@ -39,7 +15,7 @@ module.exports = {
         },
 
         async selectById(id) {
-            return await todoCategoryEntity.findOne({
+            return await getTodoCategoryModel().findOne({
                 where: {
                     id: id
                 }
@@ -47,7 +23,7 @@ module.exports = {
         },
 
         async insert(name) {
-            return await todoCategoryEntity.create({
+            return await getTodoCategoryModel().create({
                 name: name
             })
         },

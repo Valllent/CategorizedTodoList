@@ -1,43 +1,11 @@
-const {DataTypes, Model} = require("sequelize")
 const {getHashForPassword} = require("../../utils/password-hash");
+const {getUserModel} = require("../models/user-model");
 
-let userEntity
-
-class User extends Model{
-
-}
 
 module.exports = {
-    initUserEntity(sequelize) {
-        const userObject = {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            email: {
-                type: DataTypes.STRING,
-                allowNull: false
-            },
-            passwordHash: {
-                type: DataTypes.STRING,
-                allowNull: false
-            }
-        }
-        User.init(userObject, {
-            sequelize,
-            modelName: "users"
-        })
-        userEntity = User
-    },
-
-    userRepository: {
+    UserRepository: {
         async selectByName(name) {
-            return await userEntity.findOne({
+            return await getUserModel().findOne({
                 where: {
                     name: name
                 }
@@ -45,7 +13,7 @@ module.exports = {
         },
 
         async selectByEmail(email) {
-            return await userEntity.findOne({
+            return await getUserModel().findOne({
                 where: {
                     email: email
                 }
@@ -53,7 +21,7 @@ module.exports = {
         },
 
         async selectById(id) {
-            return await userEntity.findOne({
+            return await getUserModel().findOne({
                 where: {
                     id: id
                 }
@@ -62,7 +30,7 @@ module.exports = {
 
         async insert(name, email, password) {
             const passwordHash = await getHashForPassword(password);
-            return await userEntity.create({
+            return await getUserModel().create({
                 name: name,
                 email: email,
                 passwordHash: passwordHash

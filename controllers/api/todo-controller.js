@@ -1,11 +1,11 @@
-const {todoRepository} = require("../../db/repositories/todo-repository")
-const {todoCategoryRepository} = require("../../db/repositories/todo-category-repository");
+const {TodoRepository} = require("../../db/repositories/todo-repository")
+const {TodoCategoryRepository} = require("../../db/repositories/todo-category-repository");
 
 module.exports = {
     getTodoList: async (req, res) => {
         const {search, categoryId} = req.query;
 
-        const todoList = await todoRepository.selectBy(search, categoryId)
+        const todoList = await TodoRepository.selectBy(search, categoryId)
         res.status(200).json({
             success: true,
             data: todoList
@@ -30,19 +30,19 @@ module.exports = {
             }
 
             categoryId = Number.parseInt(category);
-            const todoCategory = await todoCategoryRepository.selectById(categoryId)
+            const todoCategory = await TodoCategoryRepository.selectById(categoryId)
             if (!todoCategory) {
                 return res.status(400).send(`Can't find category with id ${categoryId}`)
             }
         } else {
-            const defaultCategory = await todoCategoryRepository.selectByName("Default");
+            const defaultCategory = await TodoCategoryRepository.selectByName("Default");
             console.log(JSON.stringify(defaultCategory))
             if (defaultCategory) {
                 categoryId = defaultCategory.id
             }
         }
 
-        await todoRepository.insert(name, completedValue, categoryId)
+        await TodoRepository.insert(name, completedValue, categoryId)
         res.status(201).send("Successfully added: " + name)
     },
 
@@ -55,7 +55,7 @@ module.exports = {
             return;
         }
 
-        const todoItem = await todoRepository.select(todoItemId)
+        const todoItem = await TodoRepository.select(todoItemId)
         if (!todoItem) {
             res.status(400).send(`Can't find item with id: ${todoItemId}`)
             return;
@@ -79,7 +79,7 @@ module.exports = {
         }
 
         if (category && Number.isInteger(category)) {
-            const categoryItem = todoCategoryRepository.selectById(category)
+            const categoryItem = TodoCategoryRepository.selectById(category)
             if (categoryItem) {
                 todoItem.categoryId = categoryItem.id
             }

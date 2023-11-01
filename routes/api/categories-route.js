@@ -2,6 +2,7 @@ const express = require("express");
 const categoriesController = require("../../controllers/api/categories-controller");
 const tryCatch = require("../../utils/try-catch");
 
+
 const router = express.Router()
 
 router.get("/", tryCatch(categoriesController.getCategories))

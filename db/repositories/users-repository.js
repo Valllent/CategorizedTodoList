@@ -28,6 +28,15 @@ module.exports = {
             })
         },
 
+        async selectByIdAndUuid(id, sessionUuid) {
+            return await getUserModel().findOne({
+                where: {
+                    id: id,
+                    sessionUuid: sessionUuid
+                }
+            })
+        },
+
         async insert(name, email, password) {
             const passwordHash = await getHashForPassword(password);
             return await getUserModel().create({
@@ -36,5 +45,12 @@ module.exports = {
                 passwordHash: passwordHash
             })
         },
+
+        async insertSessionUuid(id, uuid) {
+            const user = await this.selectById(id)
+            await user.update({
+                sessionUuid: uuid
+            })
+        }
     }
 }

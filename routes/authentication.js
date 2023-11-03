@@ -3,6 +3,7 @@ const cookieSession = require("cookie-session")
 const {UserRepository} = require("../db/repositories/users-repository");
 const {compareHashWithPassword} = require("../utils/password-hash");
 const LocalStrategy = require("passport-local").Strategy;
+const Uuid = require("uuid")
 
 
 async function checkLoginAndPassword(req, name, password, done) {
@@ -21,14 +22,22 @@ async function checkLoginAndPassword(req, name, password, done) {
 }
 
 async function serializeUser(user, done) {
-    return done(null, user.id)
+    const uuid = Uuid.v4();
+    await UserRepository.insertSessionUuid(user.id, uuid)
+
+    const result = {
+        id: user.id,
+        uuid: uuid
+    }
+    return done(null, result)
 }
 
-async function deserializeUser(id, done) {
-    const user = await UserRepository.selectById(id);
+async function deserializeUser(data, done) {
+    const {id, uuid} = data;
+    const user = await UserRepository.selectByIdAndUuid(id, uuid);
 
     if (!user) {
-        return done(new Error("No user with such id"))
+        return done(new Error("No user with such data"))
     }
 
     return done(null, {

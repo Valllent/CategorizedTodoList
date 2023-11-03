@@ -19,6 +19,10 @@ const userObject = {
     passwordHash: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    sessionUuid: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }
 

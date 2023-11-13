@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const GlobalController = require("../controllers/global-contoller");
 const {initAuthentication} = require("./authentication");
+const {initDocumentation} = require("../utils/documentation");
 
 module.exports.initServer = async () => {
     app.use(require("morgan")("tiny"))
@@ -9,6 +10,7 @@ module.exports.initServer = async () => {
     app.use(express.json())
     app.use(express.static('./public'))
 
+    initDocumentation(app)
     initAuthentication(app)
 
     const apiRouter = express.Router()

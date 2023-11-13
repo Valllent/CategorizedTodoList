@@ -8,7 +8,6 @@ module.exports.initServer = async () => {
     app.use(require("morgan")("tiny"))
     app.use(express.urlencoded({extended: false}))
     app.use(express.json())
-    app.use(express.static('./public'))
 
     initDocumentation(app)
     initAuthentication(app)
